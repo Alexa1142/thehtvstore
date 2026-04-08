@@ -83,47 +83,12 @@ export async function POST(req) {
       return NextResponse.json({ success: true });
     }
 
-    if (action === 'save_apparel') {
-      // Save apparel prices to admin_settings
+    if (action === 'save_blast') {
       const { error } = await supabase
-        .from('admin_settings')
-        .upsert({ key: 'apparel_types', value: { apparel: data.apparel } }, { onConflict: 'key' })
+        .from('blast_messages')
+        .insert({ message: data.message, sent_to_count: data.sent_to_count })
         .select();
       if (error) throw error;
-      return NextResponse.json({ success: true });
-    }
-
-    if (action === 'save_print_sizes') {
-      // Save print sizes to admin_settings
-      const { error } = await supabase
-        .from('admin_settings')
-        .upsert({ key: 'print_sizes', value: { printSizes: data.printSizes } }, { onConflict: 'key' })
-        .select();
-      if (error) throw error;
-      return NextResponse.json({ success: true });
-    }
-
-    if (action === 'save_colors') {
-      // Save colors - upsert to shirt_colors table
-      for (const color of data.colors) {
-        const { error } = await supabase
-          .from('shirt_colors')
-          .upsert({ name: color.name, hex_color: color.hex_color, photo_url: color.photo_url }, { onConflict: 'name' })
-          .select();
-        if (error) throw error;
-      }
-      return NextResponse.json({ success: true });
-    }
-
-    if (action === 'save_faqs') {
-      // Save FAQs - bulk upsert
-      for (const faq of data.faqs) {
-        const { error } = await supabase
-          .from('faqs')
-          .upsert({ question: faq.q, answer: faq.a }, { onConflict: 'question' })
-          .select();
-        if (error) throw error;
-      }
       return NextResponse.json({ success: true });
     }
 
