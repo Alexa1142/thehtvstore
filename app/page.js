@@ -14,8 +14,17 @@ export default function App(){
   var tax=Math.round(total*0.07*100)/100;
   var finalTotal=Math.round((total+tax)*100)/100;
 
-  var checkout=function(){
-    if(!cNm.trim()||!cPh.trim()||!cEm.trim()){notify("Fill all fields",C.red);return}
+var checkout=async function(){
+  if(!cNm.trim()||!cPh.trim()||!cEm.trim()){notify("Fill all fields",C.red);return}
+  if(!cart||cart.length===0){notify("Cart empty",C.yellow);return}
+  setLoading(true);
+  try{
+    var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cartItems:cart,total:finalTotal,tax:tax,subtotal:total,customerInfo:{name:cNm,email:cEm,phone:cPh}})});
+    var d=await res.json();
+    if(d.error){notify("Error: "+d.error,C.red)}else{notify("Order "+d.orderCode+"!",C.cyan);setCart([]);setCNm("");setCPh("");setCEm("")}
+  }catch(e){notify("Error: "+e.message,C.red)}
+  setLoading(false);
+};    if(!cNm.trim()||!cPh.trim()||!cEm.trim()){notify("Fill all fields",C.red);return}
     if(cart.length===0){notify("Cart empty",C.yellow);return}
     setLoading(true);
     fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cartItems:cart,total:finalTotal,tax:tax,subtotal:total,customerInfo:{name:cNm,email:cEm,phone:cPh}})}).then(r=>r.json()).then(d=>{if(d.error){notify("Error: "+d.error,C.red)}else{notify("Order "+d.orderCode+"!",C.cyan);setCart([]);setCNm("");setCPh("");setCEm("")}setLoading(false)}).catch(e=>{notify(e.message,C.red);setLoading(false)});
