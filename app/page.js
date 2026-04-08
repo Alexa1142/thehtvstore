@@ -62,7 +62,7 @@ function StripeCheckout(props) {
 }
 
 export default function App() {
-  var [disc, setDisc] = useState(true), [discOk, setDiscOk] = useState(false);
+  var [disc, setDisc] = useState(false), [discOk, setDiscOk] = useState(false);
   var [cart, setCart] = useState([]), [cartOpen, setCartOpen] = useState(false), [note, setNote] = useState(null);
   var [showCheckout, setShowCheckout] = useState(false);
   var notify = useCallback(function (m, c) { setNote({ m: m, c: c }); setTimeout(function () { setNote(null) }, 3200); }, []);
