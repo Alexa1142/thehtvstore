@@ -94,7 +94,17 @@ export default function App(){
   var[fqO,setFqO]=s(null),[newFq,setNewFq]=s(""),[newFa,setNewFa]=s("");
   var[editTax,setEditTax]=s("7");
   var fR=useRef(),afR=useRef(),shirtImgRef=useRef();
-
+useEffect(function(){
+  fetch("/api/settings").then(function(r){return r.json()}).then(function(d){
+    if(d.apparel && d.apparel.length>0) setApparel(d.apparel);
+    if(d.printSizes && d.printSizes.length>0) setPrintSizes(d.printSizes);
+    if(d.colors && d.colors.length>0) setColors(d.colors.map(function(c){return{n:c.name,h:c.hex_color}}));
+    if(d.faqs && d.faqs.length>0) setFaqs(d.faqs.map(function(f){return{q:f.question,a:f.answer}}));
+    if(d.taxRate) setTaxRate(d.taxRate);
+    if(d.disclaimerText) setDiscText(d.disclaimerText);
+    if(d.products && d.products.length>0) setProds(d.products.map(function(p){return{id:p.id,name:p.name,price:parseFloat(p.price),cat:p.category,img:p.image_url,desc:p.description}}));
+  }).catch(function(){});
+},[]);
   useEffect(function(){var l=document.createElement("link");l.href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@400;500;600;700;800&display=swap";l.rel="stylesheet";document.head.appendChild(l)},[]);
   var notify=useCallback(function(m,c){setNote({m:m,c:c});setTimeout(function(){setNote(null)},3200)},[]);
 
