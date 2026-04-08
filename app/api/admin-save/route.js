@@ -170,6 +170,16 @@ export async function POST(request) {
       return Response.json({ success: true, message: "Color deleted" });
     }
 
+    if (action === "save_clover") {
+      // Save Clover POS integration settings
+      const { error } = await supabase
+        .from("admin_settings")
+        .upsert({ key: "clover_info", value: { merchantId: data.merchantId, apiKey: data.apiKey } });
+      
+      if (error) throw error;
+      return Response.json({ success: true, message: "Clover settings saved" });
+    }
+
     if (action === "save_client") {
       // Save client info
       const { error } = await supabase
