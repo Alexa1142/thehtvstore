@@ -10,23 +10,17 @@ export default function App(){
   var[tab,setTab]=s("shop"),[disc,setDisc]=s(true),[discOk,setDiscOk]=s(false);
   var[cart,setCart]=s([]),[cartOpen,setCartOpen]=s(false),[note,setNote]=s(null);
   var[cNm,setCNm]=s(""),[cPh,setCPh]=s(""),[cEm,setCEm]=s(""),[loading,setLoading]=s(false);
-  var[canvasRef,setCanvasRef]=s(null);
   var notify=useCallback(function(m,c){setNote({m:m,c:c});setTimeout(function(){setNote(null)},3200)},[]);
 
   var total=cart.reduce(function(s,i){return s+(i.price||0)},0);
   var tax=Math.round(total*0.07*100)/100;
   var finalTotal=Math.round((total+tax)*100)/100;
 
-  var checkout=async function(){
+  var checkout=function(){
     if(!cNm.trim()||!cPh.trim()||!cEm.trim()){notify("Fill all fields",C.red);return}
     if(!cart||cart.length===0){notify("Cart empty",C.yellow);return}
     setLoading(true);
-    try{
-      var res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cartItems:cart,total:finalTotal,tax:tax,subtotal:total,customerInfo:{name:cNm,email:cEm,phone:cPh}})});
-      var d=await res.json();
-      if(d.error){notify("Error: "+d.error,C.red)}else{notify("Order "+d.orderCode+"!",C.cyan);setCart([]);setCNm("");setCPh("");setCEm("")}
-    }catch(e){notify("Error: "+e.message,C.red)}
-    setLoading(false);
+    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cartItems:cart,total:finalTotal,tax:tax,subtotal:total,customerInfo:{name:cNm,email:cEm,phone:cPh}})}).then(r=>r.json()).then(d=>{if(d.sessionUrl){window.location=d.sessionUrl}else{notify("Error: "+d.error,C.red)}setLoading(false)}).catch(e=>{notify(e.message,C.red);setLoading(false)});
   };
 
   var addToCart=function(){
@@ -54,7 +48,7 @@ export default function App(){
       
       {tab==="design"&&<div style={{textAlign:"center"}}><h2 style={{fontFamily:"Playfair Display,serif",fontSize:24,fontWeight:700}}>Design Studio</h2><p style={{color:C.sub,fontSize:12,marginBottom:20}}>Create your custom design and add to cart</p><button onClick={addToCart} style={{background:C.red,color:"#fff",border:"none",padding:"12px 24px",borderRadius:8,fontWeight:700,cursor:"pointer"}}>Add Design to Cart ($34.99)</button></div>}
 
-      <div style={{maxWidth:500,margin:"40px auto 0",background:C.cd,borderRadius:10,padding:20,border:"1px solid "+C.bd}}><h3 style={{fontSize:16,fontWeight:700,margin:"0 0 16px"}}>Checkout</h3><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Name *</label><input type="text" value={cNm} onChange={function(e){setCNm(e.target.value)}} placeholder="John Doe" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Email *</label><input type="email" value={cEm} onChange={function(e){setCEm(e.target.value)}} placeholder="test@example.com" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Phone *</label><input type="text" value={cPh} onChange={function(e){setCPh(e.target.value)}} placeholder="5551234567" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{padding:10,background:"#F7F6F3",borderRadius:6,marginBottom:14}}><div style={{fontSize:11}}>Subtotal: ${total.toFixed(2)}</div><div style={{fontSize:11,color:C.sub}}>Tax: ${tax.toFixed(2)}</div><div style={{fontSize:14,fontWeight:700,color:C.red,marginTop:4}}>Total: ${finalTotal.toFixed(2)}</div></div><button onClick={checkout} disabled={loading} style={{width:"100%",padding:14,background:loading?"#ccc":C.red,color:"#fff",border:"none",borderRadius:8,fontWeight:700,cursor:loading?"not-allowed":"pointer"}}>{loading?"Processing...":"Place Order"}</button></div>
+      <div style={{maxWidth:500,margin:"40px auto 0",background:C.cd,borderRadius:10,padding:20,border:"1px solid "+C.bd}}><h3 style={{fontSize:16,fontWeight:700,margin:"0 0 16px"}}>Checkout</h3><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Name *</label><input type="text" value={cNm} onChange={function(e){setCNm(e.target.value)}} placeholder="John Doe" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Email *</label><input type="email" value={cEm} onChange={function(e){setCEm(e.target.value)}} placeholder="test@example.com" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{marginBottom:12}}><label style={{fontSize:11,fontWeight:600,color:C.sub}}>Phone *</label><input type="text" value={cPh} onChange={function(e){setCPh(e.target.value)}} placeholder="5551234567" style={{width:"100%",padding:10,background:"#F7F6F3",border:"1.5px solid "+C.bd,borderRadius:6,fontSize:12,marginTop:4,boxSizing:"border-box"}}/></div><div style={{padding:10,background:"#F7F6F3",borderRadius:6,marginBottom:14}}><div style={{fontSize:11}}>Subtotal: ${total.toFixed(2)}</div><div style={{fontSize:11,color:C.sub}}>Tax: ${tax.toFixed(2)}</div><div style={{fontSize:14,fontWeight:700,color:C.red,marginTop:4}}>Total: ${finalTotal.toFixed(2)}</div></div><button onClick={checkout} disabled={loading} style={{width:"100%",padding:14,background:loading?"#ccc":C.red,color:"#fff",border:"none",borderRadius:8,fontWeight:700,cursor:loading?"not-allowed":"pointer"}}>{loading?"Redirecting to Stripe...":"Pay with Stripe"}</button></div>
     </main>
 
     <footer style={{borderTop:"1px solid "+C.bd,padding:"14px 12px",textAlign:"center",background:C.cd}}><Bar/><div style={{marginTop:10}}><img src={LOGO} alt="HTV" style={{width:"100%",maxWidth:300,borderRadius:3}}/><p style={{color:C.sub,fontSize:8,marginTop:4}}>(c) 2026 The HTV Store</p></div></footer>
