@@ -141,6 +141,12 @@ export default function App(){
 
   var placeOrder=function(){if(cart.length===0){notify("Cart empty",C.yellow);return}var code="HTV-"+Math.random().toString(36).substring(2,8).toUpperCase();notify("Order placed! Code: "+code,C.cyan);setCart([]);setCartOpen(false)};
   var NAV=["Home","Design Studio","Shop","Bulk Orders","FAQ","Rewards","Pickup"];
+  var saveApparel=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_apparel",data:{apparel:apparel}})}).then(r=>r.json()).then(d=>{notify("Apparel saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
+  var savePrintSizes=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_print_sizes",data:{printSizes:printSizes}})}).then(r=>r.json()).then(d=>{notify("Print sizes saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
+  var saveTaxRate=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_tax_rate",data:{rate:parseFloat(editTax)/100}})}).then(r=>r.json()).then(d=>{setTaxRate(parseFloat(editTax)/100);notify("Tax saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
+  var saveDisclaimer=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_disclaimer",data:{text:discText}})}).then(r=>r.json()).then(d=>{notify("Disclaimer saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
+  var saveColors=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_colors",data:{colors:colors}})}).then(r=>r.json()).then(d=>{notify("Colors saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
+  var saveFAQs=function(){fetch("/api/admin-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"save_faqs",data:{faqs:faqs}})}).then(r=>r.json()).then(d=>{notify("FAQs saved!",C.cyan)}).catch(e=>notify("Error",C.red))};
 
   if(disc){return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"'DM Sans',sans-serif"}}>
